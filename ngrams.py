@@ -46,4 +46,4 @@ countDict = Counter(ngrams)
 count = 0
 for k in countDict.most_common(m):
 	count+=1
-	print str(count) + ": " + k[0] + "' is found " + str(k[1]) + " times."
+	print str(count) + ": '" + k[0] + "' is found " + str(k[1]) + " times."
