@@ -3,18 +3,14 @@ import sys
 import argparse
 from collections import Counter
 
-n=3
-m=4
 ngrams = []
 position = 0;
-textFile="train.txt"
 
 parser = argparse.ArgumentParser(description="Get ngrams")
 parser.add_argument('-corpus', metavar = 'textFile', type=str, help="flag for corpus")
 parser.add_argument('-n', metavar='n', type=int, help="flag for ngram")
 parser.add_argument('-m', metavar='m', type=int, help="flag for top m")
 args = parser.parse_args()
-print vars(args)
 
 nArg = vars(args)['n']
 mArg = vars(args)['m']
@@ -35,7 +31,8 @@ if(textArg != "None"):
 else:
 	textFile = "train.txt"
 
-f = open("train.txt", "r")
+print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
+f = open(textFile, "r")
 lines = f.readlines()
 text = ""
 for i in lines:
@@ -46,5 +43,7 @@ for i in range(0, len(wordArray)):
 	ngrams.append(" ".join(wordArray[position:position+n]))
 	position+=1
 countDict = Counter(ngrams)
-print countDict.most_common(m)
-
+count = 0
+for k in countDict.most_common(m):
+	count+=1
+	print str(count) + ": " + k[0] + "' is found " + str(k[1]) + " times."
