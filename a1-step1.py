@@ -20,34 +20,38 @@ nArg = vars(args)['n']
 mArg = vars(args)['m']
 textArg = vars(args)['corpus']
 
-# initialize amount of words in n-gram
-if(nArg != "None"):
+if(nArg is not None):
 	n = nArg
 else:
 	n = 3
 
 # initialize how many of the most frequent sequences will be displayed
-if(mArg != "None"):
+if(mArg is not None):
 	m = mArg
 else:
 	m = 3
 
 # initialize which corpus is used
-if(textArg != "None"):
+if(textArg is not None):
 	textFile = textArg
+
 else:
 	textFile = "train.txt"
 
-# give user feedback on what variables are used
-print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
 
-# read each line in the corpus and append into one long string
-f = open(textFile, "r")
-lines = f.readlines()
+
 text = ""
-for i in lines:
-	text += i
-
+# read each line in the corpus and append into one long string
+try:
+	f = open(textFile, "r")
+	lines = f.readlines()
+	# give user feedback on what variables are used
+	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
+	for i in lines:
+		text += i
+except IOError:
+	print "I cannot find or read the file '" + textFile + "'. Exiting."
+	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
 wordArray = text.split()
 
