@@ -48,12 +48,16 @@ try:
 	# give user feedback on what variables are used
 	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
 	#print lines
+	prev = ""
 	for i in lines:
+		if(prev == "\n" and i == "\n"):
+			continue
 		if(i=="\n"):
 			text+=" </s>"
 		text+=i
 		if(i=="\n"):
 			text+="<s> "
+		prev = i
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
