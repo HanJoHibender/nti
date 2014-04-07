@@ -10,6 +10,8 @@ ngrams2 = []
 position = 0
 position2 = 0
 
+start = "<s> "
+stop = " </s>"
 # parse command line arguments
 parser = argparse.ArgumentParser(description="Get ngrams")
 parser.add_argument('-corpus', metavar = 'textFile', type=str, help="flag for corpus")
@@ -42,8 +44,8 @@ else:
 
 
 
-text = "<s>"
-text2 = "<s>"
+text = start
+text2 = stop
 # read each line in the corpus and append into one long string
 try:
 	f = open(textFile, "r")
@@ -57,25 +59,25 @@ try:
 		if(prev == "\n" and i == "\n"):
 			continue
 		if(i=="\n"):
-			text+=" </s>"
+			text+=stop
 		text+=i
 		if(i=="\n"):
-			text+="<s> "
+			text+=start
 		prev = i
 	for j in lines:
 		if(prev2=="\n" and j == "\n"):
 			continue
 		if(j=="\n"):
-			text2+=" </s>"
+			text2+=stop
 		text2+=j
 		if(j=="\n"):
-			text2+="<s> "
+			text2+=start
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
-text += "</s>"
-text2 += "</s>"
+text += stop
+text2 += stop
 #print text
 wordArray = text.split()
 wordArray2 = text2.split()
@@ -84,13 +86,26 @@ n2 = n-1
 # get all n-grams in the list by taking all words from the current position, 
 # to the current position+n. Increment the position after each n-gram
 for i in range(0, len(wordArray)-n+1):
-	ngrams.append(" ".join(wordArray[position:position+n]))
+	gramAr = wordArray[position:position+n]
+	#print gramAr
+	if("<s>" in gramAr and "</s>" in gramAr):
+		position+=1
+		continue
+	gram = " ".join(gramAr)
+	ngrams.append(gram)
 	position+=1
 for j in range(0, len(wordArray2)-n+1):
-	ngrams2.append(" ".join(wordArray2[position2:position2+n2]))
+	gram2Ar = wordArray2[position2:position2+n2]
+	if("<s>" in gram2Ar and "</s>" in gram2Ar):
+		print gram2Ar
+		position2+=1
+		continue
+	gram2 = " ".join(gram2Ar)
+	ngrams2.append(gram2)
 	position2+=1
 # use the Counter class to create a dictionary where they key is the n-gram
 # and the frequency is the value
+#print ngrams
 countDict = Counter(ngrams)
 countDict2 = Counter(ngrams2)
 
@@ -98,6 +113,7 @@ countDict2 = Counter(ngrams2)
 # use count to print a ranking along with the output
 count = 0
 count2 = 0
+
 for k in countDict.most_common(m):
 	count+=1
 	print str(count) + ": '" + k[0] + "' is found " + str(k[1]) + " times."
