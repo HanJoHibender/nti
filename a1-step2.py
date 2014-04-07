@@ -40,21 +40,28 @@ else:
 
 
 
-text = ""
+text = "<s>"
 # read each line in the corpus and append into one long string
 try:
 	f = open(textFile, "r")
 	lines = f.readlines()
 	# give user feedback on what variables are used
 	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
+	#print lines
 	for i in lines:
-		text += i
+		if(i=="\n"):
+			text+=" </s>"
+		text+=i
+		if(i=="\n"):
+			text+="<s> "
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
+text += "</s>"
+#print text
 wordArray = text.split()
-
+print wordArray
 # get all n-grams in the list by taking all words from the current position, 
 # to the current position+n. Increment the position after each n-gram
 for i in range(0, len(wordArray)-n+1):
