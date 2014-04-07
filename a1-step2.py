@@ -3,6 +3,11 @@ import sys
 import argparse
 from collections import Counter
 
+def conProb(sequence):
+	#TODO: calculate ACTUAL probability
+	prob = 0.5
+	return prob
+
 # list to store every n-gram in
 ngrams = []
 ngrams2 = []
@@ -17,12 +22,14 @@ parser = argparse.ArgumentParser(description="Get ngrams")
 parser.add_argument('-corpus', metavar = 'textFile', type=str, help="flag for corpus")
 parser.add_argument('-n', metavar='n', type=int, help="flag for ngram")
 parser.add_argument('-m', metavar='m', type=int, help="flag for top m")
+parser.add_argument('-conditional', metavar='probFile', type=str, help="flag for conditional probabilities file")
 args = parser.parse_args()
 
 # save command line arguments
 nArg = vars(args)['n']
 mArg = vars(args)['m']
 textArg = vars(args)['corpus']
+probArg = vars(args)['conditional']
 
 if(nArg is not None):
 	n = nArg
@@ -38,14 +45,31 @@ else:
 # initialize which corpus is used
 if(textArg is not None):
 	textFile = textArg
-
 else:
 	textFile = "train.txt"
 
+if(probArg is not None):
+	probFile = probArg
+else:
+	probFile = "standard.txt"
 
 
 text = start
 text2 = stop
+
+try:
+	g = open(probFile, "r")
+	sequences = g.readlines()
+
+	for h in sequences:
+		print len(h.split())
+		if(len(h.split()) == n):
+			print "Probability of " + h + " is " + str(conProb(h))
+		else:
+			continue
+except IOError:
+	print "I cannot find or read the file '" + probFile + "'. Exiting."
+	sys.exit(0)
 # read each line in the corpus and append into one long string
 try:
 	f = open(textFile, "r")
@@ -97,7 +121,7 @@ for i in range(0, len(wordArray)-n+1):
 for j in range(0, len(wordArray2)-n+1):
 	gram2Ar = wordArray2[position2:position2+n2]
 	if("<s>" in gram2Ar and "</s>" in gram2Ar):
-		print gram2Ar
+		#print gram2Ar
 		position2+=1
 		continue
 	gram2 = " ".join(gram2Ar)
@@ -122,3 +146,4 @@ for l in countDict2.most_common(m):
 	count2+=1
 	print str(count2) + ": '" + l[0] + "' is found " + str(l[1]) + " times."
 print "Total frequencies: " + str(sum(countDict2.values()))
+
