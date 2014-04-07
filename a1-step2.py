@@ -5,8 +5,10 @@ from collections import Counter
 
 # list to store every n-gram in
 ngrams = []
+ngrams2 = []
 # save where the program is in the corpus
-position = 0;
+position = 0
+position2 = 0
 
 # parse command line arguments
 parser = argparse.ArgumentParser(description="Get ngrams")
@@ -41,6 +43,7 @@ else:
 
 
 text = "<s>"
+text2 = "<s>"
 # read each line in the corpus and append into one long string
 try:
 	f = open(textFile, "r")
@@ -49,6 +52,7 @@ try:
 	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
 	#print lines
 	prev = ""
+	prev2 = ""
 	for i in lines:
 		if(prev == "\n" and i == "\n"):
 			continue
@@ -58,28 +62,47 @@ try:
 		if(i=="\n"):
 			text+="<s> "
 		prev = i
+	for j in lines:
+		if(prev2=="\n" and j == "\n"):
+			continue
+		if(j=="\n"):
+			text2+=" </s>"
+		text2+=j
+		if(j=="\n"):
+			text2+="<s> "
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
 text += "</s>"
+text2 += "</s>"
 #print text
 wordArray = text.split()
-print wordArray
+wordArray2 = text2.split()
+n2 = n-1
+#print wordArray
 # get all n-grams in the list by taking all words from the current position, 
 # to the current position+n. Increment the position after each n-gram
 for i in range(0, len(wordArray)-n+1):
 	ngrams.append(" ".join(wordArray[position:position+n]))
 	position+=1
-
+for j in range(0, len(wordArray2)-n+1):
+	ngrams2.append(" ".join(wordArray2[position2:position2+n2]))
+	position2+=1
 # use the Counter class to create a dictionary where they key is the n-gram
 # and the frequency is the value
 countDict = Counter(ngrams)
+countDict2 = Counter(ngrams2)
 
 # formatted print: output the m most frequent n-grams with their frequencies
 # use count to print a ranking along with the output
 count = 0
+count2 = 0
 for k in countDict.most_common(m):
 	count+=1
 	print str(count) + ": '" + k[0] + "' is found " + str(k[1]) + " times."
 print "Total frequencies: " + str(sum(countDict.values()))
+for l in countDict2.most_common(m):
+	count2+=1
+	print str(count2) + ": '" + l[0] + "' is found " + str(l[1]) + " times."
+print "Total frequencies: " + str(sum(countDict2.values()))
