@@ -10,6 +10,8 @@ def conProb(sequence):
 	nMinOneGramCount = 0
 	prob = 0.0 
 	firstwords = sequence.rsplit(' ', 1)[0]
+	print "firstwords: " + firstwords
+	print "freq: " + str(countDict2[firstwords])
 	for k in countDict.most_common():
 		if k[0] == sequence:
 			nGramCount = k[1]
@@ -153,7 +155,7 @@ try:
 	seqs = seq.readlines()
 	for r in seqs:
 		r = r.rstrip('\n')
-		print r
+		print "r is : " + r + " ."
 		print "Prob of '" + r + "' is " + str(conProb(r))
 except IOError:
 	print "I cannot find or read the file '" + seqFile + "'. Exiting."
