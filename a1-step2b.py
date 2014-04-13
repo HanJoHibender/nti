@@ -20,6 +20,25 @@ def conProb(sequence):
 		prob = float(nGramCount) / float(nMinOneGramCount)
 	return prob
 
+
+def makeString(textFile):
+	fi = open(textFile, "r")
+	lines = fi.readlines()
+	text = start
+	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
+	prev = ""
+	for i in lines:
+		if(prev == "\n" and i == "\n"):
+			continue
+		if(i=="\n"):
+			text+=stop
+		text+=i
+		if(i=="\n"):
+			text+=start
+		prev = i
+	text += stop	
+	return text	
+
 # list to store every n-gram in
 ngrams = []
 ngrams2 = []
@@ -74,60 +93,19 @@ if(seqArg is not None):
 	seqFile = seqArg
 else:
 	seqFile = "sequence.txt"	
-text = start
-text2 = stop
 
-def makeString(textFile):
-	fi = open(textFile, "r")
-	lines = fi.readlines()
-	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
-	prev = ""
-	for i in lines:
-		if(prev == "\n" and i == "\n"):
-			continue
-		if(i=="\n"):
-			text+=stop
-		text+=i
-		if(i=="\n"):
-			text+=start
-		prev = i
-	return text
 # read each line in the corpus and append into one long string
 try:
-	makeString(textFile)
-	f = open(textFile, "r")
-	lines = f.readlines()
-	# give user feedback on what variables are used
-	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
-	#print lines
-	prev = ""
-	prev2 = ""
-	for i in lines:
-		if(prev == "\n" and i == "\n"):
-			continue
-		if(i=="\n"):
-			text+=stop
-		text+=i
-		if(i=="\n"):
-			text+=start
-		prev = i
-	for j in lines:
-		if(prev2=="\n" and j == "\n"):
-			continue
-		if(j=="\n"):
-			text2+=stop
-		text2+=j
-		if(j=="\n"):
-			text2+=start
+	text = makeString(textFile)
+	
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
-text += stop
-text2 += stop
+
 #print text
 wordArray = text.split()
-wordArray2 = text2.split()
+wordArray2 = wordArray
 n2 = n-1
 #print wordArray
 # get all n-grams in the list by taking all words from the current position, 
@@ -170,13 +148,22 @@ for l in countDict2.most_common(m):
 	print str(count2) + ": '" + l[0] + "' is found " + str(l[1]) + " times."
 print "Total frequencies: " + str(sum(countDict2.values()))
 
+try: 
+	seq = open(seqFile, "r")
+	seqs = seq.readlines()
+	for r in seqs:
+		r = r.rstrip('\n')
+		print r
+		print "Prob of '" + r + "' is " + str(conProb(r))
+except IOError:
+	print "I cannot find or read the file '" + seqFile + "'. Exiting."
+
 # use probFile
 try:
 	g = open(probFile, "r")
 	sequences = g.readlines()
 
 	for h in sequences:
-		# print len(h.split())
 		if(len(h.split()) == n):
 			h = h.rstrip('\n') 
 			print "Probability of '" + h + "' is " + str(conProb(h))
