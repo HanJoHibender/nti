@@ -7,8 +7,14 @@ import math
 from collections import Counter
 
 def permProb(permList):
+	probDict = {}
+	print type(probDict)
 	for perm in permList:
-		print perm
+		probStr = " ".join(perm)
+		prob = sentenceProb(probStr)
+		probDict.update({prob:perm})
+	for key in sorted(probDict.iterkeys()):
+		print str(key) + " is " + str(probDict[key])
 
 def permutations(sentence):
     perm = []
@@ -51,9 +57,7 @@ def sentenceProb(sentence):
 		for j in range(i,i+n-1):
 			start = start + words[j] + " "
 		start = start + words[i+n-1]	
-		print "'" + start + "'" 
 		sequenceprob = conProb(start)
-		print sequenceprob
 		if sequenceprob == 0: 
 			sentenceprob = 0
 		else:	
@@ -99,6 +103,7 @@ parser.add_argument('-n', metavar='n', type=int, help="flag for ngram")
 parser.add_argument('-m', metavar='m', type=int, help="flag for top m")
 parser.add_argument('-conditional', metavar='probFile', type=str, help="flag for conditional probabilities file")
 parser.add_argument('-sequence', metavar='seqFile', type=str, help="flag for sequences file")
+parser.add_argument('-permutations', metavar='permFlag', type=bool, help="turn on scoring of permutations")
 args = parser.parse_args()
 
 # save command line arguments
@@ -107,6 +112,7 @@ mArg = vars(args)['m']
 textArg = vars(args)['corpus']
 probArg = vars(args)['conditional']
 seqArg = vars(args)['sequence']
+permArg = vars(args)['permutations']
 
 if(nArg is not None):
 	n = nArg
@@ -134,6 +140,11 @@ if(seqArg is not None):
 	seqFile = seqArg
 else:
 	seqFile = "sequence.txt"	
+
+if(permArg is not None):
+	permFlag = True
+else:
+	permFlag = False
 
 # read each line in the corpus and append into one long string
 try:
@@ -214,10 +225,11 @@ try:
 		print "Log prob of '" + r + "' is " + str(sentenceProb(r))
 except IOError:
 	print "I cannot find or read the file '" + seqFile + "'. Exiting."	
-
-A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
-B = ["I", "do", "not", "know"]
-pA= permutations(A)
-pB= permutations(B)
-permProb(pA)
-permProb(pB)
+	
+if(permFlag):
+	A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
+	B = ["I", "do", "not", "know"]
+	pA= permutations(A)
+	pB= permutations(B)
+	permProb(pA)
+	permProb(pB)
