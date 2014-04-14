@@ -11,9 +11,13 @@ def permProb(permList):
 	secondProb = -1200
 	bestS = ""
 	secondS = ""
+	count=0
 	for perm in permList:
+		count++
 		probStr = " ".join(perm)
 		prob = sentenceProb(probStr)
+		if(prob==0):
+			continue
 		if(prob > bestProb):
 			secondProb = bestProb
 			secondS = bestS
@@ -22,15 +26,9 @@ def permProb(permList):
 		elif(prob < bestProb and prob > secondProb):
 			secondProb = prob
 			secondS = probStr
-		print str(prob) + " : " + probStr
+		print str(count) + " : " + str(prob) + " : " + probStr
 	print str(bestProb) + " : " + bestS
 	print str(secondProb) + " : " + secondS
-
-def permutations(sentence):
-    perm = []
-    for r in range(len(sentence) + 1):
-        perm += itertools.permutations(sentence)
-    return perm
 
 # function to calculate probability of a sequence
 def conProb(sequence):
@@ -63,7 +61,8 @@ def sentenceProb(sentence):
 	start = ""
 	sentenceprob = 0
 	#loop through sentence
-	for i in range(0,len(words)-n):	
+	l = len(words)-n
+	for i in range(0,l):	
 		for j in range(i,i+n-1):
 			start = start + words[j] + " "
 		start = start + words[i+n-1]	
@@ -238,8 +237,8 @@ except IOError:
 	
 if(permFlag):
 	A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
-	B = ["I", "do", "not", "know"]
+	B = ["I", "do", "not"]#, "know"]
 	pA = itertools.permutations(A)
 	pB = itertools.permutations(B)
-	permProb(pA)
-	#permProb(pB)
+	#permProb(pA)
+	permProb(pB)
