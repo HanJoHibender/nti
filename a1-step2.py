@@ -62,7 +62,7 @@ try:
 	sequences = g.readlines()
 
 	for h in sequences:
-		print len(h.split())
+		print h
 		if(len(h.split()) == n):
 			print "Probability of " + h + " is " + str(conProb(h))
 		else:
@@ -130,7 +130,9 @@ for j in range(0, len(wordArray2)-n+1):
 # use the Counter class to create a dictionary where they key is the n-gram
 # and the frequency is the value
 #print ngrams
+# n-gram
 countDict = Counter(ngrams)
+# n-1 gram
 countDict2 = Counter(ngrams2)
 
 # formatted print: output the m most frequent n-grams with their frequencies

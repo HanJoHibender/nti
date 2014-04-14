@@ -1,0 +1,38 @@
+assignment 1 step 2
+
+** PART 1 **
+DONE
+
+** PART 2 ** 
+- nieuwe textfile kunnen inladen met '-conditional' flag
+DONE 
+
+- aanpassen dat '-m' flag niet meer gebruikt moet worden, maar n en n-1
+een (n-1)-order Markov model met een n-gram dus
+
+- voor elke sequence lenght n in file (per line):
+	bereken kans dat laatste woord W_N volgt na rest sequence W_1...W_N-1
+	kans is P (W_N | W_N-1) = Count ( N-GRAM ) / COUNT (N-1 GRAM)
+	
+	bijv. n=2 P = COUNT ("START I") / COUNT ("START") 
+	bijv. n=3 P = COUNT ("START I ATE") / COUNT ("START I")
+	
+** Part 3 **
+- nieuwe textfile kunnen inladen met '-sequence' flag
+
+- voor elke sentence of arbitrary length in file (per line):
+	bereken totale kans
+	kans is (productsom): P = P(W_1|W_0) x P(W_2|W_1) x P(W_3|W_2) etc
+	is dus: Count ( N-GRAM ) / COUNT (N-1 GRAM) x idem x idem
+	maar neem log (gewone som): log(P)=log(P1)+log(P2)+ etc
+	
+	bijv. n=2
+	P ( <s> I ate food </s>) = 
+	P(I|<s>) x P(ate|I) x P(food|ate) x P(</s>|food)   =>
+	log(P(I|<s>)) + log(P(ate|I)) + log (P(food|ate)) + log(P(</s>|food) = 
+	log(COUNT ("START I") / COUNT ("START")) +  etc
+	
+** Part 4 ** 
+- maak permutatie van lijst woorden met itertools.permutations
+
+- 
