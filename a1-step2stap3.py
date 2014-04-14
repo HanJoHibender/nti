@@ -13,20 +13,19 @@ def permProb(permList):
 	secondS = ""
 	count=0
 	for perm in permList:
-		count++
+		count+=1
 		probStr = " ".join(perm)
 		prob = sentenceProb(probStr)
-		if(prob==0):
-			continue
-		if(prob > bestProb):
+		if(prob > bestProb and prob < 0):
 			secondProb = bestProb
 			secondS = bestS
 			bestProb = prob
 			bestS = probStr
-		elif(prob < bestProb and prob > secondProb):
+		elif(prob < bestProb and prob > secondProb and prob < 0):
 			secondProb = prob
 			secondS = probStr
 		print str(count) + " : " + str(prob) + " : " + probStr
+	print "Top two: \n"
 	print str(bestProb) + " : " + bestS
 	print str(secondProb) + " : " + secondS
 
@@ -61,18 +60,23 @@ def sentenceProb(sentence):
 	start = ""
 	sentenceprob = 0
 	#loop through sentence
-	l = len(words)-n
-	for i in range(0,l):	
-		for j in range(i,i+n-1):
-			start = start + words[j] + " "
-		start = start + words[i+n-1]	
-		sequenceprob = conProb(start)
-		if sequenceprob == 0: 
-			sentenceprob = 0
-		else:	
-			sentenceprob = sentenceprob + math.log10(sequenceprob)
-		start=""
-	return sentenceprob
+	l = len(words)
+	nG = []
+	position=0
+	sentenceProb = 0
+	for i in range(0, l-n+1):
+		gramAr = words[position:position+n]
+		#print gramAr
+		gram = " ".join(gramAr)
+		position+=1
+		sequenceProb = conProb(gram)
+		#print "gram: " + str(gram) + ", chance: " + str(sequenceProb)
+		if sequenceProb == 0:
+			sentenceProb = 0
+			break
+		else:
+			sentenceProb += math.log10(sequenceProb)
+	return sentenceProb
 
 
 def makeString(textFile):
@@ -237,7 +241,7 @@ except IOError:
 	
 if(permFlag):
 	A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
-	B = ["I", "do", "not"]#, "know"]
+	B = ["I", "do", "not", "know"]
 	pA = itertools.permutations(A)
 	pB = itertools.permutations(B)
 	#permProb(pA)
