@@ -7,19 +7,29 @@ import math
 from collections import Counter
 
 def permProb(permList):
-	probDict = {}
-	print type(probDict)
+	bestProb = -1000
+	secondProb = -1200
+	bestS = ""
+	secondS = ""
 	for perm in permList:
 		probStr = " ".join(perm)
 		prob = sentenceProb(probStr)
-		probDict.update({prob:perm})
-	for key in sorted(probDict.iterkeys()):
-		print str(key) + " is " + str(probDict[key])
+		if(prob > bestProb):
+			secondProb = bestProb
+			secondS = bestS
+			bestProb = prob
+			bestS = probStr
+		elif(prob < bestProb and prob > secondProb):
+			secondProb = prob
+			secondS = probStr
+		print str(prob) + " : " + probStr
+	print str(bestProb) + " : " + bestS
+	print str(secondProb) + " : " + secondS
 
 def permutations(sentence):
     perm = []
     for r in range(len(sentence) + 1):
-        perm += itertools.permutations(sentence, r)
+        perm += itertools.permutations(sentence)
     return perm
 
 # function to calculate probability of a sequence
@@ -229,7 +239,7 @@ except IOError:
 if(permFlag):
 	A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
 	B = ["I", "do", "not", "know"]
-	pA= permutations(A)
-	pB= permutations(B)
+	pA = itertools.permutations(A)
+	pB = itertools.permutations(B)
 	permProb(pA)
-	permProb(pB)
+	#permProb(pB)
