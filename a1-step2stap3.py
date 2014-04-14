@@ -1,9 +1,20 @@
 #!/usr/bin/python
 from __future__ import division
+import itertools
 import sys
 import argparse
 import math
 from collections import Counter
+
+def permProb(permList):
+	for perm in permList:
+		print perm
+
+def permutations(sentence):
+    perm = []
+    for r in range(len(sentence) + 1):
+        perm += itertools.permutations(sentence, r)
+    return perm
 
 # function to calculate probability of a sequence
 def conProb(sequence):
@@ -204,3 +215,9 @@ try:
 except IOError:
 	print "I cannot find or read the file '" + seqFile + "'. Exiting."	
 
+A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
+B = ["I", "do", "not", "know"]
+pA= permutations(A)
+pB= permutations(B)
+permProb(pA)
+permProb(pB)
