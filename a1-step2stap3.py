@@ -12,6 +12,7 @@ def permProb(permList):
 	bestS = ""
 	secondS = ""
 	count=0
+	
 	for perm in permList:
 		count+=1
 		probStr = " ".join(perm)
@@ -38,13 +39,9 @@ def conProb(sequence):
 	# sequence without last word 
 	firstwords = sequence.rsplit(' ', 1)[0]
 	# count n-gram
-	for k in countDict.most_common():
-		if k[0] == sequence:
-			nGramCount = k[1]
+	nGramCount = countDict[sequence]
 	# count n-1gram
-	for l in countDict2.most_common():
-		if l[0] == firstwords:
-			nMinOneGramCount = l[1]	
+	nMinOneGramCount = countDict2[firstwords]
 	# calculate probability		
 	if nMinOneGramCount != 0:
 		prob = float(nGramCount) / float(nMinOneGramCount)
@@ -66,11 +63,9 @@ def sentenceProb(sentence):
 	sentenceProb = 0
 	for i in range(0, l-n+1):
 		gramAr = words[position:position+n]
-		#print gramAr
 		gram = " ".join(gramAr)
 		position+=1
 		sequenceProb = conProb(gram)
-		#print "gram: " + str(gram) + ", chance: " + str(sequenceProb)
 		if sequenceProb == 0:
 			sentenceProb = 0
 			break
@@ -244,5 +239,5 @@ if(permFlag):
 	B = ["I", "do", "not", "know"]
 	pA = itertools.permutations(A)
 	pB = itertools.permutations(B)
-	#permProb(pA)
-	permProb(pB)
+	permProb(pA)
+	#permProb(pB)
