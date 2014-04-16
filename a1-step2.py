@@ -1,12 +1,96 @@
 #!/usr/bin/python
+from __future__ import division
+import itertools
 import sys
 import argparse
+import math
 from collections import Counter
 
+def permProb(permList):
+	bestProb = -1000
+	secondProb = -1200
+	bestS = ""
+	secondS = ""
+	count=0
+	
+	for perm in permList:
+		count+=1
+		probStr = " ".join(perm)
+		prob = sentenceProb(probStr)
+		if(prob > bestProb and prob < 0):
+			secondProb = bestProb
+			secondS = bestS
+			bestProb = prob
+			bestS = probStr
+		elif(prob < bestProb and prob > secondProb and prob < 0):
+			secondProb = prob
+			secondS = probStr
+		#print str(count) + " : " + str(prob) + " : " + probStr
+	print "Top two: \n"
+	print str(bestProb) + " : " + bestS
+	print str(secondProb) + " : " + secondS
+
+# function to calculate probability of a sequence
 def conProb(sequence):
-	#TODO: calculate ACTUAL probability
-	prob = 0.5
-	return prob
+	# default is zero (not in corpus)
+	nGramCount = 0
+	nMinOneGramCount = 0
+	prob = 0.0 
+	# sequence without last word 
+	firstwords = sequence.rsplit(' ', 1)[0]
+	# count n-gram
+	nGramCount = countDict[sequence]
+	# count n-1gram
+	nMinOneGramCount = countDict2[firstwords]
+	# calculate probability		
+	if nMinOneGramCount != 0:
+		prob = float(nGramCount) / float(nMinOneGramCount)
+	return prob+lambFlag
+
+# function to calculate probability of a sentence	
+def sentenceProb(sentence):
+	# word list with START and END
+	words = sentence.split()
+	words.insert(0,"<s>")
+	words.append("</s>")
+	# initialise
+	start = ""
+	sentenceprob = 0
+	#loop through sentence
+	l = len(words)
+	nG = []
+	position=0
+	sentenceProb = 0
+	for i in range(0, l-n+1):
+		gramAr = words[position:position+n]
+		gram = " ".join(gramAr)
+		position+=1
+		sequenceProb = conProb(gram)
+		if sequenceProb == 0:
+			sentenceProb = 0
+			break
+		else:
+			sentenceProb += math.log10(sequenceProb)
+	return sentenceProb
+
+
+def makeString(textFile):
+	fi = open(textFile, "r")
+	lines = fi.readlines()
+	text = start
+	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
+	prev = ""
+	for i in lines:
+		if(prev == "\n" and i == "\n"):
+			continue
+		if(i=="\n"):
+			text+=stop
+		text+=i
+		if(i=="\n"):
+			text+=start
+		prev = i
+	text += stop	
+	return text	
 
 # list to store every n-gram in
 ngrams = []
@@ -14,6 +98,9 @@ ngrams2 = []
 # save where the program is in the corpus
 position = 0
 position2 = 0
+# frequencies
+countDict = {}
+countDict2 =  {}
 
 start = "<s> "
 stop = " </s>"
@@ -23,6 +110,9 @@ parser.add_argument('-corpus', metavar = 'textFile', type=str, help="flag for co
 parser.add_argument('-n', metavar='n', type=int, help="flag for ngram")
 parser.add_argument('-m', metavar='m', type=int, help="flag for top m")
 parser.add_argument('-conditional', metavar='probFile', type=str, help="flag for conditional probabilities file")
+parser.add_argument('-sequence', metavar='seqFile', type=str, help="flag for sequences file")
+parser.add_argument('-permutations', metavar='permFlag', type=bool, help="turn on scoring of permutations")
+parser.add_argument('-lambda', metavar='lambFlag', type=float, help="flag for add-lambda smoothing")
 args = parser.parse_args()
 
 # save command line arguments
@@ -30,6 +120,9 @@ nArg = vars(args)['n']
 mArg = vars(args)['m']
 textArg = vars(args)['corpus']
 probArg = vars(args)['conditional']
+seqArg = vars(args)['sequence']
+permArg = vars(args)['permutations']
+lambArg = vars(args)['lambda']
 
 if(nArg is not None):
 	n = nArg
@@ -53,58 +146,32 @@ if(probArg is not None):
 else:
 	probFile = "standard.txt"
 
+if(seqArg is not None):
+	seqFile = seqArg
+else:
+	seqFile = "sequence.txt"	
 
-text = start
-text2 = stop
+if(permArg is not None):
+	permFlag = True
+else:
+	permFlag = False
 
-try:
-	g = open(probFile, "r")
-	sequences = g.readlines()
-
-	for h in sequences:
-		print h
-		if(len(h.split()) == n):
-			print "Probability of " + h + " is " + str(conProb(h))
-		else:
-			continue
-except IOError:
-	print "I cannot find or read the file '" + probFile + "'. Exiting."
-	sys.exit(0)
+if(lambArg is not None):
+	lambFlag = lambArg
+else:
+	lambFlag = 0.1
 # read each line in the corpus and append into one long string
 try:
-	f = open(textFile, "r")
-	lines = f.readlines()
-	# give user feedback on what variables are used
-	print "Corpus used: " + textFile + ", finding " + str(n) +  " words, displaying top " + str(m) + " sequences."
-	#print lines
-	prev = ""
-	prev2 = ""
-	for i in lines:
-		if(prev == "\n" and i == "\n"):
-			continue
-		if(i=="\n"):
-			text+=stop
-		text+=i
-		if(i=="\n"):
-			text+=start
-		prev = i
-	for j in lines:
-		if(prev2=="\n" and j == "\n"):
-			continue
-		if(j=="\n"):
-			text2+=stop
-		text2+=j
-		if(j=="\n"):
-			text2+=start
+	text = makeString(textFile)
+	
 except IOError:
 	print "I cannot find or read the file '" + textFile + "'. Exiting."
 	sys.exit(0)
 # split the corpus and save as a list with all newlines, whitespace etc left out
-text += stop
-text2 += stop
+
 #print text
 wordArray = text.split()
-wordArray2 = text2.split()
+wordArray2 = wordArray
 n2 = n-1
 #print wordArray
 # get all n-grams in the list by taking all words from the current position, 
@@ -130,9 +197,7 @@ for j in range(0, len(wordArray2)-n+1):
 # use the Counter class to create a dictionary where they key is the n-gram
 # and the frequency is the value
 #print ngrams
-# n-gram
-countDict = Counter(ngrams)
-# n-1 gram
+countDict  = Counter(ngrams)
 countDict2 = Counter(ngrams2)
 
 # formatted print: output the m most frequent n-grams with their frequencies
@@ -149,3 +214,36 @@ for l in countDict2.most_common(m):
 	print str(count2) + ": '" + l[0] + "' is found " + str(l[1]) + " times."
 print "Total frequencies: " + str(sum(countDict2.values()))
 
+# use probFile
+try:
+	g = open(probFile, "r")
+	sequences = g.readlines()
+
+	for h in sequences:
+		if(len(h.split()) == n):
+			h = h.rstrip('\n') 
+			print "Probability of '" + h + "' is " + str(conProb(h))
+		else:
+			continue
+except IOError:
+	print "I cannot find or read the file '" + probFile + "'. Exiting."
+	sys.exit(0)
+	
+# use seqFile	
+try: 
+	seq = open(seqFile, "r")
+	seqs = seq.readlines()
+	for r in seqs:
+		r = r.rstrip('\n')
+		print "Sentence is :' " + r + "'."
+		print "Log prob of '" + r + "' is " + str(sentenceProb(r))
+except IOError:
+	print "I cannot find or read the file '" + seqFile + "'. Exiting."	
+
+if(permFlag):
+	A = ["know", "I", "opinion", "do", "be", "your", "not", "may", "what"]
+	B = ["I", "do", "not", "know"]
+	pA = itertools.permutations(A)
+	pB = itertools.permutations(B)
+	permProb(pA)
+	permProb(pB)
